@@ -3,12 +3,13 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import {
   FetchContributors,
+  FlushContributors,
   ContributorsSortFollowers,
   ContributorsSortRepos,
   ContributorsSortGists
 } from '../actions/contributors'
 import { SetContributor } from '../actions/contributor'
-import { FetchRepos } from '../actions/repos'
+import { FetchRepos, FlushRepos } from '../actions/repos'
 import Contributors from '../components/Contributors'
 import Contributor from '../components/Contributor'
 import Login from '../components/Login'
@@ -16,7 +17,7 @@ import '../css/App.css'
 
 class App extends Component {
   static propTypes = {
-    contributors: PropTypes.array.isRequired,
+    contributors: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired
   }
 
@@ -30,6 +31,7 @@ class App extends Component {
 
   getContributors = () => {
     const { dispatch } = this.props
+    dispatch(FlushContributors())
     dispatch(FetchContributors())
   }
 
@@ -58,6 +60,7 @@ class App extends Component {
 
   setContributor = (contributor) => {
     const { dispatch } = this.props
+    dispatch(FlushRepos())
     dispatch(FetchRepos(contributor.repos_url))
     dispatch(SetContributor(contributor))
     this.setState({activeTab: 'contributor'})

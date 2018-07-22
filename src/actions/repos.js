@@ -1,8 +1,13 @@
 export const GET_REPOS = 'GET_REPOS'
+export const FLUSH_REPOS = 'FLUSH_REPOS'
 
 export const GetRepos = (repos) => ({
   type: GET_REPOS,
   repos: repos
+})
+
+export const FlushRepos = () => ({
+  type: FLUSH_REPOS
 })
 
 export const FetchRepos = (reposUrl) => dispatch => {

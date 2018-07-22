@@ -13,6 +13,7 @@ const Contributors = ({contributors, sortfollowers, sortrepos, sortgists, setcon
     <table>
       <thead>
         <tr>
+          <th>No.</th>
           <th>ID</th>
           <th>Avatar</th>
           <th>Followers</th>
@@ -21,8 +22,9 @@ const Contributors = ({contributors, sortfollowers, sortrepos, sortgists, setcon
         </tr>
       </thead>
       <tbody>
-      {contributors.map((ctr, i) =>
+      {contributors.contributors.map((ctr, i) =>
         <tr key={i} onClick={() => setcontributor(ctr) }>
+          <td>{i + 1}</td>
           <td>{ctr.id}</td>
           <td><img className='Avatar' alt='' src={ctr.avatar_url} /></td>
           <td>{ctr.followers}</td>
@@ -36,7 +38,7 @@ const Contributors = ({contributors, sortfollowers, sortrepos, sortgists, setcon
 )
 
 Contributors.propTypes = {
-  contributors: PropTypes.array.isRequired
+  contributors: PropTypes.object.isRequired
 }
 
 export default Contributors
