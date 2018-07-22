@@ -1,4 +1,9 @@
-# React + Redux + RSS fetching + Log file parser #
+# React Angular Git repository contributors rank #
+> under construction
+
+## react technologies:
+* React
+* Redux + Thunk
 
 ## To run:
 
