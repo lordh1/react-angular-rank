@@ -1,13 +1,19 @@
 export const GET_CONTRIBUTORS = 'GET_CONTRIBUTORS'
 export const FLUSH_CONTRIBUTORS = 'FLUSH_CONTRIBUTORS'
 export const SET_ANGULARCOUNTER = 'SET_ANGULARCOUNTER'
+export const SET_FETCHING = 'SET_FETCHING'
+export const CONTRIBUTORS_SORT_ANGULARREPOS = 'CONTRIBUTORS_SORT_ANGULARREPOS'
 export const CONTRIBUTORS_SORT_FOLLOWERS = 'CONTRIBUTORS_SORT_FOLLOWERS'
 export const CONTRIBUTORS_SORT_REPOS = 'CONTRIBUTORS_SORT_REPOS'
 export const CONTRIBUTORS_SORT_GISTS = 'CONTRIBUTORS_SORT_GISTS'
 
-export const ReceiveContributors = (contributors) => ({
+export const ReceiveContributors = (contributor) => ({
   type: GET_CONTRIBUTORS,
-  contributors: contributors
+  contributor: contributor
+})
+
+export const FlushContributors = () => ({
+  type: FLUSH_CONTRIBUTORS
 })
 
 export const SetAngularCounter = (angularCounter) => ({
@@ -15,8 +21,13 @@ export const SetAngularCounter = (angularCounter) => ({
   angularCounter: angularCounter
 })
 
-export const FlushContributors = () => ({
-  type: FLUSH_CONTRIBUTORS
+export const SetFetching = (value) => ({
+  type: SET_FETCHING,
+  isFetching: value
+})
+
+export const ContributorsSortAngularRepos = () => ({
+  type: CONTRIBUTORS_SORT_ANGULARREPOS
 })
 
 export const ContributorsSortFollowers = () => ({
@@ -32,28 +43,6 @@ export const ContributorsSortGists = () => ({
 })
 
 const apiUrl = 'https://api.github.com/users/angular/repos'
-
-const syncFetch = async (options) => {
-  const reposRequest = await fetch(apiUrl, options)
-  const repos = await reposRequest.json()
-  var contributors = []
-
-  for (var repo of repos) {
-    let contributorsRequest = await fetch(repo.contributors_url, options)
-    let contributors = await contributorsRequest.json()
-    // for (var contributor of contributors) {
-    //   let ctr = {
-    //     id: contributor.id,
-    //     avatar_url: contributor.avatar_url
-    //   }
-    //   contributors.push(ctr)
-    //   console.log(ctr)
-    // }
-  }
-
-  console.log(contributors)
-
-}
 
 export const FetchContributors = () => async (dispatch) => {
   var basicAuth = sessionStorage.getItem("basicAuthCredentials")
@@ -75,12 +64,10 @@ export const FetchContributors = () => async (dispatch) => {
 
   var reposLength = repos.length
   var r = 0
-  var c = 0
 
   for (var repo of repos) {
     var contributorsRequest = await fetch(repo.contributors_url, options)
     var contributors = await contributorsRequest.json()
-    // var contributorsLength = contributors.length
 
     for (var contributor of contributors) {
       var userRequest = await fetch(contributor.url, options)
@@ -89,37 +76,14 @@ export const FetchContributors = () => async (dispatch) => {
       if(!usedContributors.includes(user.id)) {
         usedContributors.push(user.id)
         dispatch(ReceiveContributors(user))
-        // console.log(c)
       }
-      c++
     }
     r++
     if(r === reposLength) {
-      console.log(angularCounter)
-      // dispatch(SetAngularCounter(angularCounter))
-      // dispatch(ReceiveContributors(allContributors))
+      dispatch(SetAngularCounter(angularCounter))
+      dispatch(SetFetching(false))
     }
   }
-
-  // syncFetch(options)
-
-  // fetch(apiUrl, options)
-  //   .then(response => response.json())
-  //   .then(data => data.map(async(repo) =>
-  //     fetch(repo.contributors_url, options)
-  //     .then(response => response.json())
-  //     .then(data => data.map(contributor => {
-  //       fetch(contributor.url, options)
-  //       .then(response => response.json())
-  //       .then(user => {
-  //         dispatch(ReceiveContributors(user))
-  //       })
-  //       return true
-  //     }))
-  //   ))
-  //   .catch(error => {
-  //     throw(error)
-  //   })
 }
 
 

@@ -4,15 +4,20 @@ import { connect } from 'react-redux'
 import {
   FetchContributors,
   FlushContributors,
+  SetFetching,
+  ContributorsSortAngularRepos,
   ContributorsSortFollowers,
   ContributorsSortRepos,
   ContributorsSortGists
 } from '../actions/contributors'
 import { SetContributor } from '../actions/contributor'
 import { FetchRepos, FlushRepos } from '../actions/repos'
+import { SetRepo } from '../actions/repo'
 import Contributors from '../components/Contributors'
 import Contributor from '../components/Contributor'
+import Repo from '../components/Repo'
 import Login from '../components/Login'
+import Logout from '../components/Logout'
 import '../css/App.css'
 
 class App extends Component {
@@ -22,7 +27,8 @@ class App extends Component {
   }
 
   state = {
-    activeTab: 'contributors'
+    activeTab: 'contributors',
+    authenticated: false
   }
 
   componentDidMount() {
@@ -30,7 +36,17 @@ class App extends Component {
   }
 
   getContributors = () => {
+    let basicAuth = sessionStorage.getItem("basicAuthCredentials")
+    if(!basicAuth) {
+      this.setState({authenticated: false})
+      this.showLogin()
+      return
+    }
+
+    this.setState({authenticated: true})
+
     const { dispatch } = this.props
+    dispatch(SetFetching())
     dispatch(FlushContributors())
     dispatch(FetchContributors())
   }
@@ -40,7 +56,18 @@ class App extends Component {
   }
 
   showLogin = () => {
-    this.setState({activeTab: 'login'})
+    const { dispatch } = this.props
+    dispatch(FlushContributors())
+    this.setState({activeTab: 'login', authenticated: false})
+  }
+
+  showLogout = () => {
+    this.setState({activeTab: 'logout'})
+  }
+
+  contributorsSortAngularRepos = () => {
+    const { dispatch } = this.props
+    dispatch(ContributorsSortAngularRepos())
   }
 
   contributorsSortFollowers = () => {
@@ -66,31 +93,53 @@ class App extends Component {
     this.setState({activeTab: 'contributor'})
   }
 
+  setRepo = (repo) => {
+    const { dispatch } = this.props
+    dispatch(SetRepo(repo))
+    this.setState({activeTab: 'repo'})
+  }
+
   render() {
-    const { contributors, contributor, repos } = this.props
-    const { activeTab } = this.state
+    const { contributors, contributor, repos, repo } = this.props
+    const { activeTab, authenticated } = this.state
 
     let tab
     if(activeTab === 'contributors') {
       tab = <Contributors
               contributors={contributors}
+              sortangularrepos={this.contributorsSortAngularRepos}
               sortfollowers={this.contributorsSortFollowers}
               sortrepos={this.contributorsSortRepos}
               sortgists={this.contributorsSortGists}
               setcontributor={this.setContributor}
             />
     } else if(activeTab === 'contributor') {
-      tab = <Contributor contributor={contributor} repos={repos}/>
-    } else if(activeTab === 'login') {
+      tab = <Contributor contributor={contributor} repos={repos} setrepo={this.setRepo}/>
+    }  else if(activeTab === 'repo') {
+      tab = <Repo repo={repo} back={() => this.setContributor(contributor)} />
+    }
+    else if(activeTab === 'login') {
       tab = <Login getcontributors={this.getContributors} showcontributors={this.showContributors} />
+    } else if(activeTab === 'logout') {
+      tab = <Logout showLogin={this.showLogin} />
     }
 
+
+    let loginButton
+    let contributorsButton
+    if(!authenticated) {
+      loginButton = <button onClick={this.showLogin}>Login</button>
+    }
+    else {
+      loginButton = <button onClick={this.showLogout}>Logout</button>
+      contributorsButton = <button onClick={this.showContributors}>Contributors</button>
+    }
 
     return (
       <div className='Main'>
         <div className='Flex'>
-          <button onClick={this.showLogin}>Login</button>
-          <button onClick={this.showContributors}>Contributors</button>
+          {loginButton}
+          {contributorsButton}
         </div>
         <div>
           {tab}
@@ -101,12 +150,13 @@ class App extends Component {
 }
 
 const mapStateToProps = state => {
-  const { contributors, contributor, repos } = state
+  const { contributors, contributor, repos, repo } = state
 
   return {
     contributors,
     contributor,
-    repos
+    repos,
+    repo
   }
 }
 

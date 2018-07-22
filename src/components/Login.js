@@ -29,6 +29,7 @@ class Login extends React.Component {
     return(
       <div className='LoginForm'>
           <h1>Login to gitHub</h1>
+          <h2>application needs authentication to GitHub API by existing account</h2>
           <div>Username</div>
           <div><input type='text' value={username} onChange={this.handleChangeUsername} /></div>
           <div>Password:</div>
