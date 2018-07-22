@@ -2,7 +2,7 @@
 
 > App is using GitHub API. Becouse of many concurent API requests You need to login to application by Your GitHub account credentials.
 
-## react technologies:
+## React technologies:
 * React
 * Redux + Thunk
 
