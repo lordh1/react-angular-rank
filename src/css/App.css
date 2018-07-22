@@ -151,14 +151,16 @@ button:active {
 }
 
 .DetailLabel {
+    margin: 5px;
     font-weight: bold;
     display: inline-block;
     width: 200px;
 }
 
 .Detail {
+    margin: 5px;
     display: inline-block;
-    width: 200px;
+    width: 400px;
 }
 
 

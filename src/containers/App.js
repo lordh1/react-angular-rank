@@ -124,7 +124,6 @@ class App extends Component {
       tab = <Logout showLogin={this.showLogin} />
     }
 
-
     let loginButton
     let contributorsButton
     if(!authenticated) {
